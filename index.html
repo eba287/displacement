@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset=utf-8 />
+  <title>LEX Displacement</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin="" />
+  <link href="https://api.mapbox.com/mapbox-assembly/v0.24.0/assembly.min.css" rel="stylesheet">
+  <link href='https://fonts.googleapis.com/css?family=Work+Sans:400,500,600' rel='stylesheet' type='text/css'>
+  <link href='css/styles.css' rel='stylesheet' />
+
+</head>
+
+<body>
+
+  <script async defer src="https://api.mapbox.com/mapbox-assembly/v0.24.0/assembly.js"></script>
+  <div class='flex-parent viewport-full relative scroll-hidden'>
+    <div class='flex-child w-full w300-ml absolute static-ml left bottom'>
+      <div class='flex-parent flex-parent--column viewport-third h-full-ml hmax-full bg-white py18 px12'>
+        <div class='flex-child flex-child--grow px12 py12 scroll-auto'>
+          <h1 class='txt-h2 mb6'>Displaced: Exploring the racialized dimensions of gentrification</h1>
+          <br>
+          <p>The Kenyan government invests heavily in education, and is proud that equal rates of boys and girls attend primary school.
+            <br>
+            <br>
+            Visualized here is data exploring the spatial distribution of boys and girls enrollment rates across Kenyan counties, with particular focus given on the attrition rates as students progress through grades 1 to 8.
+          </p>
+        </div>
+        <footer class='px12 py12 bg-gray-faint txt-s'>
+          <ul>
+            <li>Explore the raw
+              <a class='link' href='https://www.opendata.go.ke/datasets/national-boys-and-girls-enrollments-per-class-for-primary-school-education'>data</a>
+            </li>
+            <li>Map authored by
+              <a class='link' href='https://geography.as.uky.edu/users/eba287'>Emily Barrett</a>
+            </li>
+          </ul>
+        </footer>
+      </div>
+    </div>
+    <div class='flex-child flex-child--grow viewport-twothirds viewport-full-ml'>
+      <div id="map" class='viewport-twothirds viewport-full-ml'></div>
+      <!-- ui slider -->
+      <div id='slider' class='range w240 bg-white round-ml px12'>
+        <input type='range' min="1" , max="8" , value="1" , step="1" />
+      </div>
+
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
+    <script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.3.1/leaflet-omnivore.min.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-sparklines/2.1.2/jquery.sparkline.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.1.0/papaparse.min.js"></script>
+
+    <script>
+      const map = L.map('map', {
+        zoomSnap: .1,
+        center: [38.047989, -84.501640],
+        zoom: 11,
+        minZoom: 7,
+      });
+
+      const accessToken = 'pk.eyJ1IjoiZWJhMjg3IiwiYSI6ImNrOXgya2tiaDAyM28zZXFkNXV5N25zdnEifQ.hRIQRtOQlL09t15yLq_y_A'
+
+      L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=' + accessToken, {
+        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+        maxZoom: 18,
+        id: 'mapbox.light',
+        accessToken: accessToken
+      }).addTo(map);
+
+      $.getJSON("data/bg2010.geojson", function(counties) {
+
+        Papa.parse('data/race.csv', {
+
+          download: true,
+          header: true,
+          complete: function(data) {
+
+            processData(counties, data);
+
+          }
+        });
+
+      });
+
+      function processData(counties, data) {
+
+        // console.log(counties);
+        // console.log(data);
+
+        // loop through all the counties
+        for (let i of counties.features) {
+
+          // for each of the CSV data rows
+          for (let j of data.data) {
+
+            // if the county fips code and data fips code match
+            if (i.properties.GEOID10 === j.GEOID10) {
+
+              // re-assign the data for that county as the county's props
+              i.properties = j;
+
+              // no need to keep looping, break from inner loop
+              break;
+            }
+          }
+
+        }
+        console.log('after: ', counties);
+      }
+
+
+    </script>
+
+
+
+</body>
+
+</html>
