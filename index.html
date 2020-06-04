@@ -10,8 +10,74 @@
   <link href='https://fonts.googleapis.com/css?family=Work+Sans:400,500,600' rel='stylesheet' type='text/css'>
 
 </head>
+<style>
+  .legend {
+    padding: 6px 8px;
+    font-size: 1em;
+    background: rgba(75, 75, 75, 0.8);
+    color: whitesmoke;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    width: 160px;
+  }
 
+  .legend h3 {
+    font-size: 1.1em;
+    font-weight: bold;
+    line-height: 1em;
+    color: whitesmoke;
+    margin: 0;
+  }
 
+  .legend h3 span {
+    font-size: 1.3em;
+    margin: 0 20px 0 0;
+  }
+
+  .legend ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 12px 4px 0;
+  }
+
+  .legend li {
+    height: 22px;
+  }
+
+  .legend span {
+    width: 30px;
+    height: 20px;
+    float: left;
+    margin-right: 10px;
+  }
+
+  #ui-controls {
+    width: 176px;
+    padding: 8px 25px 8px 15px;
+    background: rgba(75, 75, 75, 0.8);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    color: whitesmoke;
+  }
+
+  #ui-controls .min {
+    float: left;
+  }
+
+  #ui-controls .max {
+    float: right;
+    margin-right: -15px;
+  }
+
+  .year-slider {
+    width: 100%;
+  }
+
+  label {
+    font-size: 1.1em;
+    font-weight: bold;
+  }
+</style>
 
 <body>
 
@@ -43,8 +109,8 @@
     <div class='flex-child flex-child--grow viewport-twothirds viewport-full-ml'>
       <div id="map" class='viewport-twothirds viewport-full-ml'></div>
       <!-- ui slider -->
-      <div id='slider' class='range w240 bg-white round-ml px12'>
-        <input type='range' min="1" , max="8" , value="1" , step="1" />
+      <div id="ui-controls">
+        <input type="range" min="2013" , max="2018" , value="2013" , step="1" class="year-slider"></input>
       </div>
 
     </div>
@@ -61,7 +127,7 @@
         zoomSnap: .1,
         center: [38.047989, -84.501640],
         zoom: 11,
-        minZoom: 7,
+        // minZoom: 7,
       });
 
       const accessToken = 'pk.eyJ1IjoiZWJhMjg3IiwiYSI6ImNrOXgya2tiaDAyM28zZXFkNXV5N25zdnEifQ.hRIQRtOQlL09t15yLq_y_A'
@@ -92,7 +158,6 @@
       function processData(counties, data) {
 
         // console.log(counties);
-        // console.log(data);
 
         // loop through all the counties
         for (let i of counties.features) {
@@ -134,6 +199,7 @@
 
         // verify the result!
         console.log(rates);
+
         // create class breaks
         var breaks = chroma.limits(rates, 'q', 5);
 
@@ -141,7 +207,9 @@
         var colorize = chroma.scale(chroma.brewer.OrRd).classes(breaks).mode('lab');
 
         drawMap(counties, colorize);
+        drawLegend(breaks, colorize);
       }
+      //
 
       function drawMap(counties, colorize) {
 
@@ -157,17 +225,112 @@
           }
         }).addTo(map);
 
-        // // first set the zoom/center to the dataLayer's extent
-        // map.fitBounds(dataLayer.getBounds());
-        //
-        // // then back the zoom level off a bit (since we're viewing the map full screen)
-        // map.setZoom(map.getZoom() - .2);
+        // first set the zoom/center to the dataLayer's extent
+        map.fitBounds(dataLayer.getBounds());
+
+        // then back the zoom level off a bit (since we're viewing the map full screen)
+        map.setZoom(map.getZoom() - .2);
+
+        updateMap(dataLayer, colorize, '2013');
+        createSliderUI(dataLayer, colorize);
 
       }
 
-      function updateMap() {
+      function updateMap(dataLayer, colorize, currentYear) {
+
+        dataLayer.eachLayer(function(layer) {
+          const props = layer.feature.properties;
+          // console.log(layer.feature.properties);
+
+          layer.setStyle({
+            fillColor: colorize(Number(props[currentYear]))
+          })
+
+
+          const tooltip = `<b>${props['NAME']}</b><br />
+          ${props[currentYear]} % LABEL HERE`;
+
+          layer.bindTooltip(tooltip, {
+            sticky: true
+
+          });
+        });
 
       }
+
+      function drawLegend(breaks, colorize) {
+        // create a Leaflet control for the legend
+        const legendControl = L.control({
+          position: 'topright'
+        });
+
+        // when the control is added to the map
+        legendControl.onAdd = function(map) {
+
+          // create a new division element with class of 'legend' and return
+          const legend = L.DomUtil.create('div', 'legend');
+          return legend;
+
+        };
+
+        // add the legend control to the map
+        legendControl.addTo(map);
+
+        // select div and create legend title
+        const legend = $('.legend').html("<h3><span>2006</span> Unemployment Rates</h3><ul>");
+
+        // loop through the break values
+        for (let i = 0; i < breaks.length - 1; i++) {
+
+          // determine color value
+          const color = colorize(breaks[i], breaks);
+
+          // create legend item
+          const classRange = `<li><span style="background:${color}"></span>
+          ${breaks[i].toLocaleString()} &mdash;
+          ${breaks[i + 1].toLocaleString()}% </li>`
+
+          // append to legend unordered list item
+          $('.legend ul').append(classRange);
+        }
+        // close legend unordered list
+        legend.append("</ul>");
+
+      } // end drawLegend()
+
+      function createSliderUI(dataLayer, colorize) {
+        // create Leaflet control for the slider
+        const sliderControl = L.control({
+          position: 'bottomleft'
+        });
+
+        // when added to the map
+        sliderControl.onAdd = function(map) {
+
+          // select an existing DOM element with an id of "ui-controls"
+          const slider = L.DomUtil.get("ui-controls");
+
+          // disable scrolling of map while using controls
+          L.DomEvent.disableScrollPropagation(slider);
+
+          // disable click events while using controls
+          L.DomEvent.disableClickPropagation(slider);
+
+          // return the slider from the onAdd method
+          return slider;
+        }
+
+        // add the control to the map
+        sliderControl.addTo(map);
+        // select the form element
+        $(".year-slider")
+          .on("input change", function() { // when user changes
+            const currentYear = this.value; // update the year
+            $('.legend h3 span').html(currentYear); // update the map with current timestamp
+            updateMap(dataLayer, colorize, currentYear); // update timestamp in legend heading
+          });
+
+      } // end createSliderUI()
     </script>
 
 </body>
