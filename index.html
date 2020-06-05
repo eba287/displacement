@@ -88,11 +88,7 @@
         <div class='flex-child flex-child--grow px12 py12 scroll-auto'>
           <h1 class='txt-h2 mb6'>Displaced: Exploring the racialized dimensions of gentrification</h1>
           <br>
-          <p>The Kenyan government invests heavily in education, and is proud that equal rates of boys and girls attend primary school.
-            <br>
-            <br>
-            Visualized here is data exploring the spatial distribution of boys and girls enrollment rates across Kenyan counties, with particular focus given on the attrition rates as students progress through grades 1 to 8.
-          </p>
+          <p>TEXT & IMAGES HERE</p>
         </div>
         <footer class='px12 py12 bg-gray-faint txt-s'>
           <ul>
@@ -111,6 +107,14 @@
       <!-- ui slider -->
       <div id="ui-controls">
         <input type="range" min="2013" , max="2018" , value="2013" , step="1" class="year-slider"></input>
+      </div>
+      <!-- ui is outside of container-fluid and will be dynamically added to map -->
+      <div class="form-group mr-3 mt-3" id="dropdown-ui">
+        <select class="form-control bg-dark text-black">
+          <option value="OWNED_MORT" selected>Black</option>
+          <option value="OWNED_FREE">White</option>
+          <option value="RENTER">Hispanic</option>
+        </select>
       </div>
 
     </div>
@@ -139,9 +143,21 @@
         accessToken: accessToken
       }).addTo(map);
 
+      // set global variables for map layer,
+      // mapped attribute, and normalizing attribute
+      let attributeValue = "OWNED_MORT";
+      const normValue = "OCCUPIED";
+
+      // create object to hold legend titles
+      const labels = {
+        "OWNED_MORT": "Occupied housing units owned with mortgage",
+        "OWNED_FREE": "Occupied housing units owned free and clear",
+        "RENTER": "Occupied housing units rented"
+      }
+
       $.getJSON("data/bg2010.json", function(counties) {
 
-        Papa.parse('data/race2.csv', {
+        Papa.parse('data/black2.csv', {
 
           download: true,
           header: true,
@@ -177,7 +193,7 @@
           }
 
         }
-        console.log('after: ', counties);
+        // console.log('after: ', counties);
 
         // empty array to store all the data values
         const rates = [];
@@ -255,6 +271,7 @@
 
           });
         });
+        addUi(dataLayer); // add the UI controls
 
       }
 
@@ -277,7 +294,7 @@
         legendControl.addTo(map);
 
         // select div and create legend title
-        const legend = $('.legend').html("<h3><span>2006</span> Unemployment Rates</h3><ul>");
+        const legend = $('.legend').html("<h3><span>2013</span>Population</h3><ul>");
 
         // loop through the break values
         for (let i = 0; i < breaks.length - 1; i++) {
@@ -331,6 +348,31 @@
           });
 
       } // end createSliderUI()
+
+      function addUi(dataLayer) {
+        // create the slider control
+        var selectControl = L.control({
+          position: "topright"
+        });
+
+        // when control is added
+        selectControl.onAdd = function() {
+          // get the element with id attribute of ui-controls
+          return L.DomUtil.get("dropdown-ui");
+        };
+        // add the control to the map
+        selectControl.addTo(map);
+
+        $('#dropdown-ui select').change(function() {
+          // code executed here when change event occurs
+          // console.log(`Something changed at ${Date.now()}`);
+          // console.log(this.value);
+          attributeValue = this.value;
+
+          // call updateMap function
+          updateMap(dataLayer);
+        });
+      }
     </script>
 
 </body>
