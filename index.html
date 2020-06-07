@@ -92,7 +92,7 @@
         </div>
         <footer class='px12 py12 bg-gray-faint txt-s'>
           <ul>
-            <li>Explore the raw
+            <li>Explore the raw data
               <a class='link' href='https://www.opendata.go.ke/datasets/national-boys-and-girls-enrollments-per-class-for-primary-school-education'>data</a>
             </li>
             <li>Map authored by
@@ -111,22 +111,10 @@
       <!-- ui is outside of container-fluid and will be dynamically added to map -->
       <div class="form-group mr-3 mt-3" id="dropdown-ui">
         <select class="form-control bg-dark text-black">
-          <option value="OWNED_MORT" selected>Black</option>
-          <option value="OWNED_FREE">White</option>
-          <option value="RENTER">Hispanic</option>
+          <option value="BLACK" selected>Black</option>
+          <option value="WHITE">White</option>
+          <option value="HISPANIC">Hispanic</option>
         </select>
-      </div>
-
-      <div id='info' class='py6 px12 bg-white border border--gray-light round fixed w240'>
-        <p>County: <span></span></p>
-        <p class='girls'>girls <span></span>: <span class='txt-l txt-bold'></span></p>
-        <p class='boys'>boys <span></span>: <span class='txt-l txt-bold'></span></p>
-
-        <!-- Additional elements added here for this step! -->
-        <hr class='txt-hr'>
-        <p class='my6'>trend: grades 1 &ndash; 8</p>
-        <p class='mb6'><span class='girlspark'></span></p>
-        <p><span class='boyspark'></span></p>
       </div>
 
     </div>
@@ -137,7 +125,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-sparklines/2.1.2/jquery.sparkline.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.1.0/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.1.0/chroma.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-sparklines/2.1.2/jquery.sparkline.min.js"></script>
 
     <script>
       const map = L.map('map', {
@@ -156,19 +143,15 @@
         accessToken: accessToken
       }).addTo(map);
 
-      // set global variables for map layer,
-      // mapped attribute, and normalizing attribute
-      // let attributeValue = "OWNED_MORT";
-      // const normValue = "OCCUPIED";
 
-      // create object to hold legend titles
-      const labels = {
-        "OWNED_MORT": "Occupied housing units owned with mortgage",
-        "OWNED_FREE": "Occupied housing units owned free and clear",
-        "RENTER": "Occupied housing units rented"
-      }
+      // // create object to hold legend titles
+      // const labels = {
+      //   "OWNED_MORT": "Occupied housing units owned with mortgage",
+      //   "OWNED_FREE": "Occupied housing units owned free and clear",
+      //   "RENTER": "Occupied housing units rented"
+      // }
 
-      let attributeValue = $.getJSON("data/bg2010.json", function(counties) {
+      let attributeValue = $.getJSON("data/bg2010.json", function(blocks) {
 
         Papa.parse('data/black2.csv', {
 
@@ -176,7 +159,7 @@
           header: true,
           complete: function(data) {
 
-            processData(counties, data);
+            processData(blocks, data);
 
 
           }
@@ -184,12 +167,12 @@
 
       });
 
-      function processData(counties, data) {
+      function processData(blocks, data) {
 
-        // console.log(counties);
+        // console.log(blocks);
 
         // loop through all the counties
-        for (let i of counties.features) {
+        for (let i of blocks.features) {
 
           // for each of the CSV data rows
           for (let j of data.data) {
@@ -212,16 +195,16 @@
         const rates = [];
 
         // iterate through all the counties
-        counties.features.forEach(function(county) {
+        blocks.features.forEach(function(block) {
 
           // iterate through all the props of each county
-          for (const prop in county.properties) {
+          for (const prop in block.properties) {
 
             // if the attribute is a number and not one of the fips codes or name
             if (prop != "GEOID" && prop != "GEOID10" && prop != "NAME") {
 
               // push that attribute value into the array
-              rates.push(Number(county.properties[prop]));
+              rates.push(Number(block.properties[prop]));
             }
           }
         });
@@ -235,15 +218,15 @@
         // create color generator function
         var colorize = chroma.scale(chroma.brewer.OrRd).classes(breaks).mode('lab');
 
-        drawMap(counties, colorize);
+        drawMap(blocks, colorize);
         drawLegend(breaks, colorize);
       }
       //
 
-      function drawMap(counties, colorize) {
+      function drawMap(blocks, colorize) {
 
         // create Leaflet object with geometry data and add to map
-        const dataLayer = L.geoJson(counties, {
+        const dataLayer = L.geoJson(blocks, {
           style: function(feature) {
             return {
               color: 'black',
@@ -265,6 +248,8 @@
 
       }
 
+
+
       function updateMap(dataLayer, colorize, currentYear) {
 
         dataLayer.eachLayer(function(layer) {
@@ -283,7 +268,9 @@
             sticky: true
 
           });
+
         });
+
         addUi(dataLayer); // add the UI controls
 
       }
@@ -382,7 +369,7 @@
           // console.log(this.value);
           attributeValue = this.value;
 
-          if (attributeValue === "OWNED_FREE"){
+          if (attributeValue === "WHITE") {
 
             var dataLayer = $.getJSON("data/bg2010.json", function(counties) {
 
@@ -400,7 +387,7 @@
 
             });
 
-          } else if (attributeValue === "OWNED_MORT"){
+          } else if (attributeValue === "BLACK") {
             var dataLayer = $.getJSON("data/bg2010.json", function(counties) {
 
               Papa.parse('data/black2.csv', {
@@ -417,7 +404,7 @@
 
             });
 
-          } else if (attributeValue === "RENTER"){
+          } else if (attributeValue === "HISPANIC") {
             var dataLayer = $.getJSON("data/bg2010.json", function(counties) {
 
               Papa.parse('data/hispanic2.csv', {
@@ -439,6 +426,24 @@
           // call updateMap function
           updateMap(dataLayer);
         });
+      }
+
+      function updateLegend(breaks) {
+        // console.log(attributeValue);
+        // console.log(breaks);
+        // select the legend, add a title, begin an unordered list and assign to a variable
+        const legend = $('#legend').html(`<h5>${labels[attributeValue]}</h5>`);
+
+        // loop through the Array of classification break values
+        for (let i = 0; i <= breaks.length - 1; i++) {
+
+          let color = getColor(breaks[i][0], breaks);
+
+          legend.append(
+            `<span style="background:${color}"></span>
+      <label>${(breaks[i][0] * 100).toFixed(3)} &mdash;
+      ${(breaks[i][1] * 100).toFixed(3)}%</label>`);
+        }
       }
     </script>
 
