@@ -117,6 +117,19 @@
         </select>
       </div>
 
+      <!-- spark linke code beginning -->
+      <!-- <div id='info' class='py6 px12 bg-white border border-- gray-light round fixed w240'>
+        <p>County: <span></span></p>
+        <p class='girls'>girls <span></span>: <span class='txt-l txt-bold'></span></p>
+        <p class='boys'>boys <span></span>: <span class='txt-l txt-bold'></span></p> -->
+
+      <!-- Additional elements added here for this step! -->
+      <!-- <hr class='txt-hr'>
+        <p class='my6'>trend: grades 1 &ndash; 8</p>
+        <p class='mb6'><span class='girlspark'></span></p>
+        <p><span class='boyspark'></span></p>
+      </div> -->
+
     </div>
 
     <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
@@ -127,6 +140,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.1.0/chroma.min.js"></script>
 
     <script>
+      // To do: fix the upate legend function & create trend lines in pop-ups
+
+
       const map = L.map('map', {
         zoomSnap: .1,
         center: [38.047989, -84.501640],
@@ -144,13 +160,7 @@
       }).addTo(map);
 
 
-      // // create object to hold legend titles
-      // const labels = {
-      //   "OWNED_MORT": "Occupied housing units owned with mortgage",
-      //   "OWNED_FREE": "Occupied housing units owned free and clear",
-      //   "RENTER": "Occupied housing units rented"
-      // }
-
+      // set global variables for map layer
       let attributeValue = $.getJSON("data/bg2010.json", function(blocks) {
 
         Papa.parse('data/black2.csv', {
@@ -167,20 +177,26 @@
 
       });
 
+      const labels = {
+        "WHITE": "TEXT here",
+        "BLACK": "TEXT here",
+        "HISPANIC": "TEXT here"
+      }
+
       function processData(blocks, data) {
 
         // console.log(blocks);
 
-        // loop through all the counties
+        // loop through all the block groups
         for (let i of blocks.features) {
 
           // for each of the CSV data rows
           for (let j of data.data) {
 
-            // if the county fips code and data fips code match
+            // if the fips code and data fips code match
             if (i.properties.GEOID10 === j.GEOID10) {
 
-              // re-assign the data for that county as the county's props
+              // re-assign the data for that blocks as the blocks's props
               i.properties = j;
 
               // no need to keep looping, break from inner loop
@@ -189,15 +205,22 @@
           }
 
         }
-        // console.log('after: ', counties);
 
+        // console.log(blocks);
+
+        getBreaks(blocks);
+
+      }
+      //
+
+      function getBreaks(blocks) {
         // empty array to store all the data values
         const rates = [];
 
-        // iterate through all the counties
+        // iterate through all the block groups
         blocks.features.forEach(function(block) {
 
-          // iterate through all the props of each county
+          // iterate through all the props of each block
           for (const prop in block.properties) {
 
             // if the attribute is a number and not one of the fips codes or name
@@ -220,8 +243,8 @@
 
         drawMap(blocks, colorize);
         drawLegend(breaks, colorize);
+        updateLegend(breaks, colorize);
       }
-      //
 
       function drawMap(blocks, colorize) {
 
@@ -268,6 +291,32 @@
             sticky: true
 
           });
+
+          // beginning of spark line code: --- UPDATE
+
+          // dataLayer.on('mouseover', function(e) {
+          //   const props = layer.feature.properties;
+          //   // console.log(props);
+          //
+          //   // empty arrays for boys and girls values
+          //   const girlsValues = []
+          //
+          //   // loop through the grade levels and push values into those arrays
+          //   for (let i = 1; i <= 8; i++) {
+          //     girlsValues.push(props[currentYear]);
+          //     console.log(girlsValues);
+          //   }
+          //
+          //   $('.girlspark').sparkline(girlsValues, {
+          //     width: '200px',
+          //     height: '30px',
+          //     lineColor: '#D96D02',
+          //     fillColor: '#d98939 ',
+          //     spotRadius: 0,
+          //     lineWidth: 2
+          //   });
+          //
+          // });
 
         });
 
@@ -371,7 +420,7 @@
 
           if (attributeValue === "WHITE") {
 
-            var dataLayer = $.getJSON("data/bg2010.json", function(counties) {
+            const dataLayer = $.getJSON("data/bg2010.json", function(counties) {
 
               Papa.parse('data/white2.csv', {
 
@@ -388,7 +437,7 @@
             });
 
           } else if (attributeValue === "BLACK") {
-            var dataLayer = $.getJSON("data/bg2010.json", function(counties) {
+            const dataLayer = $.getJSON("data/bg2010.json", function(counties) {
 
               Papa.parse('data/black2.csv', {
 
@@ -405,7 +454,7 @@
             });
 
           } else if (attributeValue === "HISPANIC") {
-            var dataLayer = $.getJSON("data/bg2010.json", function(counties) {
+            const dataLayer = $.getJSON("data/bg2010.json", function(counties) {
 
               Papa.parse('data/hispanic2.csv', {
 
@@ -421,14 +470,15 @@
 
             });
 
+
           };
 
           // call updateMap function
-          updateMap(dataLayer);
+          getBreaks(dataLayer);
         });
       }
 
-      function updateLegend(breaks) {
+      function updateLegend(breaks, colorize) {
         // console.log(attributeValue);
         // console.log(breaks);
         // select the legend, add a title, begin an unordered list and assign to a variable
@@ -437,7 +487,7 @@
         // loop through the Array of classification break values
         for (let i = 0; i <= breaks.length - 1; i++) {
 
-          let color = getColor(breaks[i][0], breaks);
+          let color = colorize(breaks[i][0], breaks);
 
           legend.append(
             `<span style="background:${color}"></span>
