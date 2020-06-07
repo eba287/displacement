@@ -158,8 +158,8 @@
 
       // set global variables for map layer,
       // mapped attribute, and normalizing attribute
-      let attributeValue = "OWNED_MORT";
-      const normValue = "OCCUPIED";
+      // let attributeValue = "OWNED_MORT";
+      // const normValue = "OCCUPIED";
 
       // create object to hold legend titles
       const labels = {
@@ -168,7 +168,7 @@
         "RENTER": "Occupied housing units rented"
       }
 
-      $.getJSON("data/bg2010.json", function(counties) {
+      let attributeValue = $.getJSON("data/bg2010.json", function(counties) {
 
         Papa.parse('data/black2.csv', {
 
@@ -381,6 +381,60 @@
           // console.log(`Something changed at ${Date.now()}`);
           // console.log(this.value);
           attributeValue = this.value;
+
+          if (attributeValue === "OWNED_FREE"){
+
+            var dataLayer = $.getJSON("data/bg2010.json", function(counties) {
+
+              Papa.parse('data/white2.csv', {
+
+                download: true,
+                header: true,
+                complete: function(data) {
+
+                  processData(counties, data);
+
+
+                }
+              });
+
+            });
+
+          } else if (attributeValue === "OWNED_MORT"){
+            var dataLayer = $.getJSON("data/bg2010.json", function(counties) {
+
+              Papa.parse('data/black2.csv', {
+
+                download: true,
+                header: true,
+                complete: function(data) {
+
+                  processData(counties, data);
+
+
+                }
+              });
+
+            });
+
+          } else if (attributeValue === "RENTER"){
+            var dataLayer = $.getJSON("data/bg2010.json", function(counties) {
+
+              Papa.parse('data/hispanic2.csv', {
+
+                download: true,
+                header: true,
+                complete: function(data) {
+
+                  processData(counties, data);
+
+
+                }
+              });
+
+            });
+
+          };
 
           // call updateMap function
           updateMap(dataLayer);
