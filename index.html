@@ -211,8 +211,7 @@
         getBreaks(blocks);
 
       }
-      //
-
+      // ... 2. this executes ...
       function getBreaks(blocks) {
         // empty array to store all the data values
         const rates = [];
@@ -242,6 +241,7 @@
         var colorize = chroma.scale(chroma.brewer.OrRd).classes(breaks).mode('lab');
 
         drawMap(blocks, colorize);
+        // ... 3. draws a new legend ...
         drawLegend(breaks, colorize);
         updateLegend(breaks, colorize);
       }
@@ -327,6 +327,7 @@
       function drawLegend(breaks, colorize) {
         // create a Leaflet control for the legend
         const legendControl = L.control({
+          // ... 4. putting it in the top right corner.
           position: 'topright'
         });
 
@@ -474,6 +475,7 @@
           };
 
           // call updateMap function
+          // 1. Every time the dropdown changes...
           getBreaks(dataLayer);
         });
       }
