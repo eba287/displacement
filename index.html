@@ -77,6 +77,10 @@
     font-size: 1.1em;
     font-weight: bold;
   }
+
+  #info {
+    z-index: 1000;
+  }
 </style>
 
 <body>
@@ -117,18 +121,16 @@
         </select>
       </div>
 
-      <!-- spark linke code beginning -->
-      <!-- <div id='info' class='py6 px12 bg-white border border-- gray-light round fixed w240'>
-        <p>County: <span></span></p>
-        <p class='girls'>girls <span></span>: <span class='txt-l txt-bold'></span></p>
-        <p class='boys'>boys <span></span>: <span class='txt-l txt-bold'></span></p> -->
+      <!-- ui info panel -->
+      <div id='info' class='py6 px12 bg-white border border--gray-light round fixed w240'>
+        <p><span></span></p>
+        <p> Population: <span class='population'></span>%</p>
 
-      <!-- Additional elements added here for this step! -->
-      <!-- <hr class='txt-hr'>
-        <p class='my6'>trend: grades 1 &ndash; 8</p>
-        <p class='mb6'><span class='girlspark'></span></p>
-        <p><span class='boyspark'></span></p>
-      </div> -->
+        <!-- Additional elements added here for this step! -->
+        <hr class='txt-hr'>
+        <p class='my6'>Trend: 2013 &ndash; 2018</p>
+        <p class='mb6'><span class='spark'></span></p>
+      </div>
 
     </div>
 
@@ -144,9 +146,9 @@
 
 
       const map = L.map('map', {
-        zoomSnap: .1,
-        center: [38.047989, -84.501640],
-        zoom: 11,
+        // zoomSnap: .1,
+        // center: [38.047989, -84.501640],
+        // zoom: 11,
         // minZoom: 7,
       });
 
@@ -285,39 +287,14 @@
             fillColor: colorize(Number(props[currentYear]))
           })
 
-
-          const tooltip = `<b>${props['NAME']}</b><br />
-          ${props[currentYear]} % LABEL HERE`;
-
-          layer.bindTooltip(tooltip, {
-            sticky: true
-
-          });
-
-          // beginning of spark line code: --- UPDATE
-
-          // dataLayer.on('mouseover', function(e) {
-          //   const props = layer.feature.properties;
-          //   // console.log(props);
+          // const tooltip = `<b>${props['NAME']}</b><br />
+          // ${props[currentYear]} % LABEL HERE`;
           //
-          //   // empty arrays for boys and girls values
-          //   const girlsValues = []
-          //
-          //   // loop through the grade levels and push values into those arrays
-          //   for (let i = 1; i <= 8; i++) {
-          //     girlsValues.push(props[currentYear]);
-          //     console.log(girlsValues);
-          //   }
-          //
-          //   $('.girlspark').sparkline(girlsValues, {
-          //     width: '200px',
-          //     height: '30px',
-          //     lineColor: '#D96D02',
-          //     fillColor: '#d98939 ',
-          //     spotRadius: 0,
-          //     lineWidth: 2
-          //   });
-          //
+          // layer.bindTooltip(tooltip, {
+          //   sticky: true
+
+          retreiveInfo(dataLayer, currentYear);
+
           // });
 
         });
@@ -471,6 +448,94 @@
 
 
           };
+        });
+      }
+
+      function retreiveInfo(dataLayer, currentYear) {
+        // function body
+        // select the element and reference with variable
+        // and hide it from view initially
+        const info = $('#info').hide();
+
+        // since boysLayer is on top, use to detect mouseover events
+        dataLayer.on('mouseover', function(e) {
+
+          // remove the none class to display and show
+          info.show();
+
+          // access properties of target layer
+          const props = e.layer.feature.properties;
+          // console.log(props[currentYear]);
+
+          // populate HTML elements with relevant info
+          $('#info span').html(props.NAME);
+          $(".population").html(props[currentYear]);
+          // $(".boys span:first-child").html('(grade ' + currentGrade + ')');
+          // $(".girls span:last-child").html(Number(props['G' + currentGrade]).toLocaleString());
+          // $(".boys span:last-child").html(Number(props['B' + currentGrade]).toLocaleString());
+
+          // raise opacity level as visual affordance
+          e.layer.setStyle({
+            fillOpacity: .5,
+            weight: 2
+          });
+
+          // empty arrays for boys and girls values
+          const dataValues = []
+
+          // loop through the grade levels and push values into those arrays
+          for (let i = 3; i <= 8; i++) {
+            dataValues.push(props['201' + i]);
+
+          }
+
+          // console.log(dataValues);
+
+          $('.spark').sparkline(dataValues, {
+            width: '200px',
+            height: '30px',
+            lineColor: '#D96D02',
+            fillColor: '#d98939 ',
+            spotRadius: 0,
+            lineWidth: 2
+          });
+          //
+
+        });
+
+        // hide the info panel when mousing off layergroup and remove affordance opacity
+        dataLayer.on('mouseout', function(e) {
+
+          // hide the info panel
+          info.hide();
+
+          // reset the layer style
+          e.layer.setStyle({
+            fillOpacity: 1,
+            weight: 1
+          });
+        });
+
+        // when the mouse moves on the document
+        $(document).mousemove(function(e) {
+          // first offset from the mouse position of the info window
+          info.css({
+            "left": e.pageX + 6,
+            "top": e.pageY - info.height() - 25
+          });
+
+          // if it crashes into the top, flip it lower right
+          if (info.offset().top < 4) {
+            info.css({
+              "top": e.pageY + 15
+            });
+          }
+          // if it crashes into the right, flip it to the left
+          if (info.offset().left + info.width() >= $(document).width() - 40) {
+            info.css({
+              "left": e.pageX - info.width() - 80
+            });
+          }
         });
       }
     </script>
