@@ -159,6 +159,11 @@
         accessToken: accessToken
       }).addTo(map);
 
+      // create a Leaflet control for the legend
+      const legendControl = L.control({
+        position: 'topright'
+      });
+
 
       // set global variables for map layer
       let attributeValue = $.getJSON("data/bg2010.json", function(blocks) {
@@ -233,7 +238,7 @@
         });
 
         // verify the result!
-        console.log(rates);
+        // console.log(rates);
 
         // create class breaks
         var breaks = chroma.limits(rates, 'q', 5);
@@ -241,12 +246,10 @@
         // create color generator function
         var colorize = chroma.scale(chroma.brewer.OrRd).classes(breaks).mode('lab');
 
-        drawMap(blocks, colorize);
-        drawLegend(breaks, colorize);
-        updateLegend(breaks, colorize);
+        drawMap(blocks, colorize, breaks);
       }
 
-      function drawMap(blocks, colorize) {
+      function drawMap(blocks, colorize, breaks) {
 
         // create Leaflet object with geometry data and add to map
         const dataLayer = L.geoJson(blocks, {
@@ -266,14 +269,13 @@
         // then back the zoom level off a bit (since we're viewing the map full screen)
         map.setZoom(map.getZoom() - .2);
 
-        updateMap(dataLayer, colorize, '2013');
-        createSliderUI(dataLayer, colorize);
+        updateMap(dataLayer, colorize, '2013', breaks);
+        createSliderUI(dataLayer, colorize, breaks);
+
 
       }
 
-
-
-      function updateMap(dataLayer, colorize, currentYear) {
+      function updateMap(dataLayer, colorize, currentYear, breaks) {
 
         dataLayer.eachLayer(function(layer) {
           const props = layer.feature.properties;
@@ -320,15 +322,12 @@
 
         });
 
-        addUi(dataLayer); // add the UI controls
+        addUi(dataLayer); // add the UI control
+        drawLegend(breaks, colorize);
 
       }
 
       function drawLegend(breaks, colorize) {
-        // create a Leaflet control for the legend
-        const legendControl = L.control({
-          position: 'topright'
-        });
 
         // when the control is added to the map
         legendControl.onAdd = function(map) {
@@ -343,7 +342,7 @@
         legendControl.addTo(map);
 
         // select div and create legend title
-        const legend = $('.legend').html("<h3><span>2013</span>Population</h3><ul>");
+        const legend = $('.legend').html("<h3><span>2006</span> Unemployment Rates</h3><ul>");
 
         // loop through the break values
         for (let i = 0; i < breaks.length - 1; i++) {
@@ -353,8 +352,8 @@
 
           // create legend item
           const classRange = `<li><span style="background:${color}"></span>
-          ${breaks[i].toLocaleString()} &mdash;
-          ${breaks[i + 1].toLocaleString()}% </li>`
+        ${breaks[i].toLocaleString()} &mdash;
+        ${breaks[i + 1].toLocaleString()}% </li>`
 
           // append to legend unordered list item
           $('.legend ul').append(classRange);
@@ -364,7 +363,7 @@
 
       } // end drawLegend()
 
-      function createSliderUI(dataLayer, colorize) {
+      function createSliderUI(dataLayer, colorize, breaks) {
         // create Leaflet control for the slider
         const sliderControl = L.control({
           position: 'bottomleft'
@@ -393,7 +392,7 @@
           .on("input change", function() { // when user changes
             const currentYear = this.value; // update the year
             $('.legend h3 span').html(currentYear); // update the map with current timestamp
-            updateMap(dataLayer, colorize, currentYear); // update timestamp in legend heading
+            updateMap(dataLayer, colorize, currentYear, breaks); // update timestamp in legend heading
           });
 
       } // end createSliderUI()
@@ -472,28 +471,7 @@
 
 
           };
-
-          // call updateMap function
-          getBreaks(dataLayer);
         });
-      }
-
-      function updateLegend(breaks, colorize) {
-        // console.log(attributeValue);
-        // console.log(breaks);
-        // select the legend, add a title, begin an unordered list and assign to a variable
-        const legend = $('#legend').html(`<h5>${labels[attributeValue]}</h5>`);
-
-        // loop through the Array of classification break values
-        for (let i = 0; i <= breaks.length - 1; i++) {
-
-          let color = colorize(breaks[i][0], breaks);
-
-          legend.append(
-            `<span style="background:${color}"></span>
-      <label>${(breaks[i][0] * 100).toFixed(3)} &mdash;
-      ${(breaks[i][1] * 100).toFixed(3)}%</label>`);
-        }
       }
     </script>
 
