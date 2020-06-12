@@ -249,6 +249,7 @@
         var colorize = chroma.scale(chroma.brewer.OrRd).classes(breaks).mode('lab');
 
         drawMap(blocks, colorize, breaks);
+
       }
 
       function drawMap(blocks, colorize, breaks) {
@@ -271,13 +272,15 @@
         // then back the zoom level off a bit (since we're viewing the map full screen)
         map.setZoom(map.getZoom() - .2);
 
-        updateMap(dataLayer, colorize, '2013', breaks);
-        createSliderUI(dataLayer, colorize, breaks);
+        updateMap(dataLayer, colorize, '2013');
+        addUi(dataLayer); // add the UI control
+        drawLegend(breaks, colorize);
+        createSliderUI(dataLayer, colorize);
 
 
       }
 
-      function updateMap(dataLayer, colorize, currentYear, breaks) {
+      function updateMap(dataLayer, colorize, currentYear) {
 
         dataLayer.eachLayer(function(layer) {
           const props = layer.feature.properties;
@@ -293,14 +296,12 @@
           // layer.bindTooltip(tooltip, {
           //   sticky: true
 
-          retreiveInfo(dataLayer, currentYear);
+          // retreiveInfo(dataLayer, currentYear);
 
           // });
 
         });
 
-        addUi(dataLayer); // add the UI control
-        drawLegend(breaks, colorize);
 
       }
 
@@ -319,7 +320,7 @@
         legendControl.addTo(map);
 
         // select div and create legend title
-        const legend = $('.legend').html("<h3><span>2006</span> Unemployment Rates</h3><ul>");
+        const legend = $('.legend').html("<h3><span>2013</span>Population</h3><ul>");
 
         // loop through the break values
         for (let i = 0; i < breaks.length - 1; i++) {
@@ -340,7 +341,7 @@
 
       } // end drawLegend()
 
-      function createSliderUI(dataLayer, colorize, breaks) {
+      function createSliderUI(dataLayer, colorize) {
         // create Leaflet control for the slider
         const sliderControl = L.control({
           position: 'bottomleft'
@@ -368,8 +369,10 @@
         $(".year-slider")
           .on("input change", function() { // when user changes
             const currentYear = this.value; // update the year
-            $('.legend h3 span').html(currentYear); // update the map with current timestamp
-            updateMap(dataLayer, colorize, currentYear, breaks); // update timestamp in legend heading
+            // console.log(currentYear);
+            $('.legend h3 span').html(currentYear); // update legend with current timestamp
+            updateMap(dataLayer, colorize, currentYear); // update the map
+
           });
 
       } // end createSliderUI()
@@ -483,10 +486,13 @@
           // empty arrays for boys and girls values
           const dataValues = []
 
+          dataValues.push(props[1990]);
+          dataValues.push(props[2000]);
+          dataValues.push(props[2010]);
+
           // loop through the grade levels and push values into those arrays
           for (let i = 3; i <= 8; i++) {
             dataValues.push(props['201' + i]);
-
           }
 
           // console.log(dataValues);
