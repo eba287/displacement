@@ -7,14 +7,14 @@
   <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin="" />
   <link href="https://api.mapbox.com/mapbox-assembly/v0.24.0/assembly.min.css" rel="stylesheet">
-  <link href='https://fonts.googleapis.com/css?family=Work+Sans:400,500,600' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Work+Sans:400,500,600' rel='stylesheet' type='text/css'>
 
 </head>
 <style>
   .legend {
     padding: 6px 8px;
     font-size: 1em;
-    background: rgba(75, 75, 75, 0.8);
+    background: rgba(52, 73, 94, 0.5);
     color: whitesmoke;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
     border-radius: 5px;
@@ -54,8 +54,8 @@
   #ui-controls,
   #ui-controls2 {
     width: 176px;
+    background: rgba(52, 73, 94, 0.5);
     padding: 8px 25px 8px 15px;
-    background: rgba(75, 75, 75, 0.8);
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
     border-radius: 5px;
     color: whitesmoke;
@@ -79,10 +79,6 @@
     margin-right: -15px;
   }
 
-  .year-slider {
-    width: 100%;
-  }
-
   label {
     font-size: 1.1em;
     font-weight: bold;
@@ -92,15 +88,16 @@
     z-index: 1000;
   }
 
-  #dropdown-ui {
+  .dropdown-content{
+    background: rgba(52, 73, 94, 0.5);
+    border-radius: 5px;
+    width: 170px;
     padding: 6px 8px;
-    font-size: 1em;
-    background: rgba(75, 75, 75, 0.8);
+    font-size: 1.2em;
     color: whitesmoke;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-    border-radius: 5px;
-    width: 160px;
   }
+
 </style>
 
 <body>
@@ -129,7 +126,7 @@
     <div class='flex-child flex-child--grow viewport-twothirds viewport-full-ml'>
       <div id="map" class='viewport-twothirds viewport-full-ml'></div>
       <!-- ui slider -->
-      <div id="ui-controls">
+      <div id="ui-controls" >
         <label>
           <span class="min">2013</span>
           <span class="max">2018</span>
@@ -146,8 +143,8 @@
       </div>
 
       <!-- ui is outside of container-fluid and will be dynamically added to map -->
-      <div class="form-group mr-3 mt-3" id="dropdown-ui">
-        <select class="form-control bg-dark text-black">
+      <div id="dropdown-ui">
+        <select class="dropdown-content">
           <option value="BLACK" selected>Black</option>
           <option value="WHITE">White</option>
           <option value="HISPANIC">Hispanic</option>
@@ -157,7 +154,7 @@
       <!-- ui info panel -->
       <div id='info' class='py6 px12 bg-white border border--gray-light round fixed w240'>
         <p><span></span></p>
-        <p> Population: <span class='population'></span>%</p>
+        <p><span class='year'></span> population: <span class='population'></span>%</p>
 
         <!-- Additional elements added here for this step! -->
         <hr class='txt-hr'>
@@ -217,11 +214,11 @@
 
       });
 
-      const labels = {
-        "WHITE": "TEXT here",
-        "BLACK": "TEXT here",
-        "HISPANIC": "TEXT here"
-      }
+      // const labels = {
+      //   "WHITE": "TEXT here",
+      //   "BLACK": "TEXT here",
+      //   "HISPANIC": "TEXT here"
+      // }
 
       function processData(blocks, data) {
 
@@ -296,7 +293,7 @@
             return {
               color: 'black',
               weight: 1,
-              fillOpacity: 1,
+              fillOpacity:1,
               fillColor: '#1f78b4'
             };
           }
@@ -546,6 +543,7 @@
 
           // populate HTML elements with relevant info
           $('#info span').html(props.NAME);
+          $(".year").html(currentYear);
           $(".population").html(props[currentYear]);
           // $(".boys span:first-child").html('(grade ' + currentGrade + ')');
           // $(".girls span:last-child").html(Number(props['G' + currentGrade]).toLocaleString());
