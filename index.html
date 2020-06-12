@@ -51,7 +51,8 @@
     margin-right: 10px;
   }
 
-  #ui-controls {
+  #ui-controls,
+  #ui-controls2 {
     width: 176px;
     padding: 8px 25px 8px 15px;
     background: rgba(75, 75, 75, 0.8);
@@ -65,6 +66,14 @@
   }
 
   #ui-controls .max {
+    float: right;
+    margin-right: -15px;
+  }
+  #ui-controls2 .min {
+    float: left;
+  }
+
+  #ui-controls2 .max {
     float: right;
     margin-right: -15px;
   }
@@ -110,8 +119,21 @@
       <div id="map" class='viewport-twothirds viewport-full-ml'></div>
       <!-- ui slider -->
       <div id="ui-controls">
-        <input type="range" min="2013" , max="2018" , value="2013" , step="1" class="year-slider"></input>
+        <label>
+          <span class="min">2013</span>
+          <span class="max">2018</span>
+          <input type="range" min="2013" , max="2018" , value="2013" , step="1" class="year-slider"></input>
+        </label>
       </div>
+      <!-- ui slider -->
+      <div id="ui-controls2">
+        <label>
+          <span class="min">1990</span>
+          <span class="max">2010</span>
+          <input type="range" min="1990" , max="2010" , value="1990" , step="10" class="year-slider"></input>
+        </label>
+      </div>
+
       <!-- ui is outside of container-fluid and will be dynamically added to map -->
       <div class="form-group mr-3 mt-3" id="dropdown-ui">
         <select class="form-control bg-dark text-black">
@@ -128,7 +150,7 @@
 
         <!-- Additional elements added here for this step! -->
         <hr class='txt-hr'>
-        <p class='my6'>Trend: 2013 &ndash; 2018</p>
+        <p class='my6'>Trend: 1990 &ndash; 2018</p>
         <p class='mb6'><span class='spark'></span></p>
       </div>
 
@@ -246,7 +268,7 @@
         var breaks = chroma.limits(rates, 'q', 5);
 
         // create color generator function
-        var colorize = chroma.scale(chroma.brewer.OrRd).classes(breaks).mode('lab');
+        var colorize = chroma.scale('YlGn').classes(breaks).mode('lab');
 
         drawMap(blocks, colorize, breaks);
 
@@ -272,7 +294,7 @@
         // then back the zoom level off a bit (since we're viewing the map full screen)
         map.setZoom(map.getZoom() - .2);
 
-        updateMap(dataLayer, colorize, '2013');
+        updateMap(dataLayer, colorize, '2010');
         addUi(dataLayer); // add the UI control
         drawLegend(breaks, colorize);
         createSliderUI(dataLayer, colorize);
@@ -296,11 +318,13 @@
           // layer.bindTooltip(tooltip, {
           //   sticky: true
 
-          // retreiveInfo(dataLayer, currentYear);
+
 
           // });
 
         });
+
+        retreiveInfo(dataLayer, currentYear);
 
 
       }
@@ -320,7 +344,7 @@
         legendControl.addTo(map);
 
         // select div and create legend title
-        const legend = $('.legend').html("<h3><span>2013</span>Population</h3><ul>");
+        const legend = $('.legend').html("<h3><span>2010</span>Population</h3><ul>");
 
         // loop through the break values
         for (let i = 0; i < breaks.length - 1; i++) {
@@ -347,8 +371,14 @@
           position: 'bottomleft'
         });
 
+        // create Leaflet control for the slider
+        const sliderControl2 = L.control({
+          position: 'bottomleft'
+        });
+
         // when added to the map
         sliderControl.onAdd = function(map) {
+
 
           // select an existing DOM element with an id of "ui-controls"
           const slider = L.DomUtil.get("ui-controls");
@@ -363,8 +393,26 @@
           return slider;
         }
 
+        sliderControl2.onAdd = function(map) {
+
+          // select an existing DOM element with an id of "ui-controls"
+          const slider2 = L.DomUtil.get("ui-controls2");
+
+          // disable scrolling of map while using controls
+          L.DomEvent.disableScrollPropagation(slider2);
+
+          // disable click events while using controls
+          L.DomEvent.disableClickPropagation(slider2);
+
+          // return the slider from the onAdd method
+          return slider2;
+        }
+
         // add the control to the map
         sliderControl.addTo(map);
+        sliderControl2.addTo(map);
+
+
         // select the form element
         $(".year-slider")
           .on("input change", function() { // when user changes
@@ -375,7 +423,18 @@
 
           });
 
+        // select the form element
+        $(".year-slider2")
+          .on("input change", function() { // when user changes
+            const currentYear = this.value; // update the year
+            // console.log(currentYear);
+            $('.legend h3 span').html(currentYear); // update legend with current timestamp
+            updateMap(dataLayer, colorize, currentYear); // update the map
+
+          });
+
       } // end createSliderUI()
+
 
       function addUi(dataLayer) {
         // create the slider control
