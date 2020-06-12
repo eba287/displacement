@@ -7,7 +7,7 @@
   <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin="" />
   <link href="https://api.mapbox.com/mapbox-assembly/v0.24.0/assembly.min.css" rel="stylesheet">
-    <link href='https://fonts.googleapis.com/css?family=Work+Sans:400,500,600' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Work+Sans:400,500,600' rel='stylesheet' type='text/css'>
 
 </head>
 <style>
@@ -88,7 +88,7 @@
     z-index: 1000;
   }
 
-  .dropdown-content{
+  .dropdown-content {
     background: rgba(52, 73, 94, 0.5);
     border-radius: 5px;
     width: 170px;
@@ -97,7 +97,6 @@
     color: whitesmoke;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
   }
-
 </style>
 
 <body>
@@ -109,15 +108,19 @@
         <div class='flex-child flex-child--grow px12 py12 scroll-auto'>
           <h1 class='txt-h2 mb6'>Displaced: Exploring the racialized dimensions of gentrification</h1>
           <br>
-          <p>TEXT & IMAGES HERE</p>
+          <p>
+            “People have kind of been comparing it to the great migration, like I am going to keep it real with you guys. The kind of things that people say, it is like ok they are getting all the black folks up out of here. The black folks are
+              being pushed out to the Tates Creek, the Russell Creek and areas where there are already a high concentration of black people, they are being pushed to the margins, out the downtown areas. Especially, we want this downtown area you guys
+              have to go. We want this now and we have plans for it and you are in the way. When I look out my window, I am not trying to see you guys. It is that kind of feeling that people have. People feel it. They can tell it”.
+          </p>
         </div>
         <footer class='px12 py12 bg-gray-faint txt-s'>
           <ul>
-            <li>Explore the raw data
-              <a class='link' href='https://www.opendata.go.ke/datasets/national-boys-and-girls-enrollments-per-class-for-primary-school-education'>data</a>
-            </li>
             <li>Map authored by
               <a class='link' href='https://geography.as.uky.edu/users/eba287'>Emily Barrett</a>
+            </li>
+            <li>Data sources:
+              <a class='link' href='https://data.census.gov/cedsci/'>US Census Bureau </a> (2013-2018, ACS 5yr estimates) and<a class='link' href='https://www.nhgis.org'> NHGIS<a> (time series 1990-2010) </a>
             </li>
           </ul>
         </footer>
@@ -126,7 +129,7 @@
     <div class='flex-child flex-child--grow viewport-twothirds viewport-full-ml'>
       <div id="map" class='viewport-twothirds viewport-full-ml'></div>
       <!-- ui slider -->
-      <div id="ui-controls" >
+      <div id="ui-controls">
         <label>
           <span class="min">2013</span>
           <span class="max">2018</span>
@@ -153,8 +156,8 @@
 
       <!-- ui info panel -->
       <div id='info' class='py6 px12 bg-white border border--gray-light round fixed w240'>
-        <p><span></span></p>
-        <p><span class='year'></span> population: <span class='population'></span>%</p>
+        <p><span class='txt-bold'><span></p>
+        <p></span>Population: <span class='population'></span>%</p>
 
         <!-- Additional elements added here for this step! -->
         <hr class='txt-hr'>
@@ -293,7 +296,7 @@
             return {
               color: 'black',
               weight: 1,
-              fillOpacity:1,
+              fillOpacity: 1,
               fillColor: '#1f78b4'
             };
           }
@@ -356,7 +359,7 @@
         legendControl.addTo(map);
 
         // select div and create legend title
-        const legend = $('.legend').html("<h3><span>2010</span>Population</h3><ul>");
+        const legend = $('.legend').html("<h3><span>2010</span>Percent of total population</h3><ul>");
 
         // loop through the break values
         for (let i = 0; i < breaks.length - 1; i++) {
