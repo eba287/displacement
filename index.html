@@ -320,6 +320,7 @@
         addUi(dataLayer); // add the UI control
         drawLegend(breaks, colorize);
         createSliderUI(dataLayer, colorize);
+        
 
 
       }
@@ -551,10 +552,16 @@
           attributeValue = this.value;
 
           map.removeLayer(dataLayer)
+          map.eachLayer(function(layer){
+            // console.log(layer)
+            if(layer._leaflet_id > 24) {
+              map.removeLayer(layer)
+            }
+            
+          });
+          
 
           if (attributeValue === "WHITE") {
-
-            map.removeLayer(dataLayer)
 
             const getData = $.getJSON("data/bg2010.json", function(counties) {
 
@@ -572,8 +579,6 @@
             });
 
           } else if (attributeValue === "BLACK") {
-            
-            map.removeLayer(dataLayer)
 
             const getData = $.getJSON("data/bg2010.json", function(counties) {
 
@@ -592,8 +597,6 @@
             });
 
           } else if (attributeValue === "HISPANIC") {
-            
-            map.removeLayer(dataLayer)
 
             const getData = $.getJSON("data/bg2010.json", function(counties) {
 
@@ -604,6 +607,7 @@
                 complete: function(data) {
 
                   processData(counties, data);
+
 
 
                 }
