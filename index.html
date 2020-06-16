@@ -208,6 +208,7 @@
       });
       // make this global too
       let currentYear = 2010
+
       // set global variables for map layer
       let attributeValue = $.getJSON("data/bg2010.json", function(blocks) {
 
@@ -317,13 +318,17 @@
         map.setZoom(map.getZoom() - .2);
 
         updateMap(dataLayer, colorize, currentYear);
-        addUi(dataLayer); // add the UI control
+        // addUi(dataLayer); // add the UI control
         drawLegend(breaks, colorize);
         createSliderUI(dataLayer, colorize);
         
 
 
       }
+      
+      // add the UI control
+      // call function globally to prevent looping
+      addUi()
 
       function updateMap(dataLayer, colorize, currentYear) {
 
@@ -545,19 +550,26 @@
         // add the control to the map
         selectControl.addTo(map);
 
+        let i = 0
+
         $('#dropdown-ui select').change(function() {
           // code executed here when change event occurs
           // console.log(`Something changed at ${Date.now()}`);
           // console.log(this.value);
           attributeValue = this.value;
-
-          map.removeLayer(dataLayer)
+         
+          i++
+          
+          // Hack to remove overlay layers
           map.eachLayer(function(layer){
             // console.log(layer)
-            if(layer._leaflet_id > 24) {
+            if(!layer._url) {
               map.removeLayer(layer)
             }
-            
+          });
+
+          map.eachLayer(function(layer){
+            console.log(layer)
           });
           
 
@@ -609,7 +621,6 @@
                   processData(counties, data);
 
 
-
                 }
               });
 
@@ -617,7 +628,11 @@
 
 
           };
+
+          console.log(i)
+          
         });
+        
       }
 
       function retreiveInfo(dataLayer, currentYear) {
