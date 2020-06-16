@@ -141,7 +141,15 @@
         <label>
           <span class="min">1990</span>
           <span class="max">2010</span>
-          <input type="range" min="1990" , max="2010" , value="2010" , step="10" class="year-slider"></input>
+          <input type="range" min="1990" , max="2010" , value="2010" , step="10" class="year-slider2"></input>
+        </label>
+      </div>
+      <!-- ui slider -->
+      <div id="ui-controls3">
+        <label>
+          <span class="min">1990</span>
+          <span class="max">2018</span>
+          <input type="range" min="1" , max="9" , value="3" , step="1" class="year-slider3"></input>
         </label>
       </div>
 
@@ -340,7 +348,6 @@
         });
 
         retreiveInfo(dataLayer, currentYear);
-        console.log(dataLayer)
 
 
       }
@@ -382,13 +389,18 @@
       } // end drawLegend()
 
       function createSliderUI(dataLayer, colorize) {
-        // create Leaflet control for the slider
+        //create Leaflet control for the slider
         const sliderControl = L.control({
           position: 'bottomleft'
         });
 
         // create Leaflet control for the slider
         const sliderControl2 = L.control({
+          position: 'bottomleft'
+        });
+
+         // create Leaflet control for the slider
+         const sliderControl3 = L.control({
           position: 'bottomleft'
         });
 
@@ -424,9 +436,25 @@
           return slider2;
         }
 
+        sliderControl3.onAdd = function(map) {
+
+          // select an existing DOM element with an id of "ui-controls"
+          const slider3 = L.DomUtil.get("ui-controls3");
+
+          // disable scrolling of map while using controls
+          L.DomEvent.disableScrollPropagation(slider3);
+
+          // disable click events while using controls
+          L.DomEvent.disableClickPropagation(slider3);
+
+          // return the slider from the onAdd method
+          return slider3;
+          }
+
         // add the control to the map
         sliderControl.addTo(map);
         sliderControl2.addTo(map);
+        sliderControl3.addTo(map);
 
 
         // select the form element
@@ -444,6 +472,56 @@
           .on("input change", function() { // when user changes
             const currentYear = this.value; // update the year
             // console.log(currentYear);
+            $('.legend h3 span').html(currentYear); // update legend with current timestamp
+            updateMap(dataLayer, colorize, currentYear); // update the map
+
+          });
+
+          // select the form element
+        $(".year-slider3")
+          .on("input change", function() { // when user changes
+            const selection = this.value;
+            const currentYear = swapYear(selection) 
+            
+            function swapYear(selection) {
+
+                return selection == 1 ? 1990
+                : selection == 2 ? 2000
+                : selection == 3 ? 2010
+                : selection == 4 ? 2013
+                : selection == 5 ? 2014
+                : selection == 6 ? 2015
+                : selection == 7 ? 2016
+                : selection == 8 ? 2017
+                : selection == 9 ? 2018
+                : 2010;
+
+                // ternary operator above is like below
+                // if (selection == 1) {
+                //   return "1990"
+                // } else if (selection == 2) {
+                //   return 2000
+                // } else if (selection == 3) {
+                //   return 2010
+                // } else if (selection == 4) {
+                //   return 2013
+                // } else if (selection == 5) {
+                //   return 2014
+                // } else if (selection == 6) {
+                //   return 2015
+                // } else if (selection == 7) {
+                //   return 2016
+                // } else if (selection == 8) {
+                //   return 2017
+                // } else if (selection == 9) {
+                //   return 2018
+                // } else {
+                //   return 2010
+                // }
+              
+
+            }
+            console.log(currentYear,selection);
             $('.legend h3 span').html(currentYear); // update legend with current timestamp
             updateMap(dataLayer, colorize, currentYear); // update the map
 
