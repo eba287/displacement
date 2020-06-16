@@ -206,8 +206,8 @@
       const legendControl = L.control({
         position: 'topright'
       });
-
-
+      // make this global too
+      let currentYear = 2010
       // set global variables for map layer
       let attributeValue = $.getJSON("data/bg2010.json", function(blocks) {
 
@@ -316,7 +316,7 @@
         // then back the zoom level off a bit (since we're viewing the map full screen)
         map.setZoom(map.getZoom() - .2);
 
-        updateMap(dataLayer, colorize, '2010');
+        updateMap(dataLayer, colorize, currentYear);
         addUi(dataLayer); // add the UI control
         drawLegend(breaks, colorize);
         createSliderUI(dataLayer, colorize);
@@ -367,7 +367,7 @@
         legendControl.addTo(map);
 
         // select div and create legend title
-        const legend = $('.legend').html("<h3><span>2010</span>Percent of total population</h3><ul>");
+        const legend = $('.legend').html(`<h3><span>${currentYear}</span>Percent of total population</h3><ul>`);
 
         // loop through the break values
         for (let i = 0; i < breaks.length - 1; i++) {
@@ -460,7 +460,7 @@
         // select the form element
         $(".year-slider")
           .on("input change", function() { // when user changes
-            const currentYear = this.value; // update the year
+            currentYear = this.value; // update the year
             // console.log(currentYear);
             $('.legend h3 span').html(currentYear); // update legend with current timestamp
             updateMap(dataLayer, colorize, currentYear); // update the map
@@ -470,7 +470,7 @@
         // select the form element
         $(".year-slider2")
           .on("input change", function() { // when user changes
-            const currentYear = this.value; // update the year
+            currentYear = this.value; // update the year
             // console.log(currentYear);
             $('.legend h3 span').html(currentYear); // update legend with current timestamp
             updateMap(dataLayer, colorize, currentYear); // update the map
@@ -481,7 +481,7 @@
         $(".year-slider3")
           .on("input change", function() { // when user changes
             const selection = this.value;
-            const currentYear = swapYear(selection) 
+            currentYear = swapYear(selection) 
             
             function swapYear(selection) {
 
@@ -549,6 +549,8 @@
           // console.log(`Something changed at ${Date.now()}`);
           // console.log(this.value);
           attributeValue = this.value;
+
+          map.removeLayer(dataLayer)
 
           if (attributeValue === "WHITE") {
 
