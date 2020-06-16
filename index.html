@@ -340,6 +340,7 @@
         });
 
         retreiveInfo(dataLayer, currentYear);
+        console.log(dataLayer)
 
 
       }
@@ -473,7 +474,9 @@
 
           if (attributeValue === "WHITE") {
 
-            const dataLayer = $.getJSON("data/bg2010.json", function(counties) {
+            map.removeLayer(dataLayer)
+
+            const getData = $.getJSON("data/bg2010.json", function(counties) {
 
               Papa.parse('data/white2.csv', {
 
@@ -483,14 +486,16 @@
 
                   processData(counties, data);
 
-
                 }
               });
 
             });
 
           } else if (attributeValue === "BLACK") {
-            const dataLayer = $.getJSON("data/bg2010.json", function(counties) {
+            
+            map.removeLayer(dataLayer)
+
+            const getData = $.getJSON("data/bg2010.json", function(counties) {
 
               Papa.parse('data/black2.csv', {
 
@@ -507,7 +512,10 @@
             });
 
           } else if (attributeValue === "HISPANIC") {
-            const dataLayer = $.getJSON("data/bg2010.json", function(counties) {
+            
+            map.removeLayer(dataLayer)
+
+            const getData = $.getJSON("data/bg2010.json", function(counties) {
 
               Papa.parse('data/hispanic2.csv', {
 
