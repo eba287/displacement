@@ -51,8 +51,7 @@
     margin-right: 10px;
   }
 
-  #ui-controls,
-  #ui-controls2 {
+  #ui-controls3 {
     width: 176px;
     background: rgba(52, 73, 94, 0.5);
     padding: 8px 25px 8px 15px;
@@ -61,23 +60,15 @@
     color: whitesmoke;
   }
 
-  #ui-controls .min {
+  #ui-controls3 .min {
     float: left;
   }
 
-  #ui-controls .max {
+  #ui-controls3 .max {
     float: right;
     margin-right: -15px;
   }
 
-  #ui-controls2 .min {
-    float: left;
-  }
-
-  #ui-controls2 .max {
-    float: right;
-    margin-right: -15px;
-  }
 
   label {
     font-size: 1.1em;
@@ -108,20 +99,28 @@
         <div class='flex-child flex-child--grow px12 py12 scroll-auto'>
           <h1 class='txt-h2 mb6'>Displaced: Exploring the racialized dimensions of gentrification</h1>
           <br>
-          <p>
-            “People have kind of been comparing it to the great migration, like I am going to keep it real with you guys. The kind of things that people say, it is like ok they are getting all the black folks up out of here. The black folks are
-              being pushed out to the Tates Creek, the Russell Creek and areas where there are already a high concentration of black people, they are being pushed to the margins, out the downtown areas. Especially, we want this downtown area you guys
-              have to go. We want this now and we have plans for it and you are in the way. When I look out my window, I am not trying to see you guys. It is that kind of feeling that people have. People feel it. They can tell it”.
+          <p> While gentrification is often celebrated as brining needed investment to urban neighborhoods, the resulting redevelopment can also displace long time residents, particularly if they are poor and/or black. Of course, today, some of these disparate impacts of gentrification are widely recognized by urban planners, scholars, and community activists alike.
+          </p>
+          <br>
+          <p>However, understanding the extent to which poor communiteis of color are being displaced, and where they are moving to, especially given the constraints of the affordable housing market, remains ambigous. At least, documenting this racialized displacement with census data remains underexamined.
+          </p>
+          <br>
+          To be sure, there are numerous personal and anectdotal stories that speak to the racialized dimensions of displacement. For instnace, one community activist expressed to me that: “People have kind of been comparing it to the great migration... The kind of things that people say, it is like ok they are getting all the black folks up out of here. The black folks are
+          being pushed out to Tates Creek, the Russell Creek and areas where there are already a high concentration of black people. They are being pushed to the margins, out of the downtown areas. Especially, we want this downtown area you guys
+          have to go. We want this now and we have plans for it and you are in the way. When I look out my window, I am not trying to see you guys. It is that kind of feeling that people have. People feel it.”
+        </p>
+        <br>
+        Complementing these powerful narratives, this interactive map explores demographic trends in Lexington, KY between 1990-2018.
+
           </p>
         </div>
         <footer class='px12 py12 bg-gray-faint txt-s'>
           <ul>
-            <li>Map authored by
-              <a class='link' href='https://geography.as.uky.edu/users/eba287'>Emily Barrett</a>
+            <li>Authored by
+              <a class='link' href='https://eba287.github.io/'>Emily Barrett</a>
             </li>
-            <li>Data sources:
-              <a class='link' href='https://data.census.gov/cedsci/'>US Census Bureau </a> (2013-2018, ACS 5yr estimates) and<a class='link' href='https://www.nhgis.org'> NHGIS<a> (time series 1990-2010) </a>
-            </li>
+            <li>Data soures &
+              <a class='link' href='https://github.com/eba287/displacement'>  metadata </a>
           </ul>
         </footer>
       </div>
@@ -129,19 +128,11 @@
     <div class='flex-child flex-child--grow viewport-twothirds viewport-full-ml'>
       <div id="map" class='viewport-twothirds viewport-full-ml'></div>
       <!-- ui slider -->
-      <div id="ui-controls">
-        <label>
-          <span class="min">2013</span>
-          <span class="max">2018</span>
-          <input type="range" min="2013" , max="2018" , value="2013" , step="1" class="year-slider"></input>
-        </label>
-      </div>
-      <!-- ui slider -->
-      <div id="ui-controls2">
+      <div id="ui-controls3">
         <label>
           <span class="min">1990</span>
-          <span class="max">2010</span>
-          <input type="range" min="1990" , max="2010" , value="2010" , step="10" class="year-slider"></input>
+          <span class="max">2018</span>
+          <input type="range" min="1" , max="9" , value="3" , step="1" class="year-slider3"></input>
         </label>
       </div>
 
@@ -179,9 +170,9 @@
 
 
       const map = L.map('map', {
-        // zoomSnap: .1,
-        // center: [38.047989, -84.501640],
-        // zoom: 11,
+        zoomSnap: .1,
+        center: [38.03, -84.45],
+        zoom: 11,
         // minZoom: 7,
       });
 
@@ -198,7 +189,8 @@
       const legendControl = L.control({
         position: 'topright'
       });
-
+      // make this global too
+      let currentYear = 2010
 
       // set global variables for map layer
       let attributeValue = $.getJSON("data/bg2010.json", function(blocks) {
@@ -215,13 +207,10 @@
           }
         });
 
+
+
       });
 
-      // const labels = {
-      //   "WHITE": "TEXT here",
-      //   "BLACK": "TEXT here",
-      //   "HISPANIC": "TEXT here"
-      // }
 
       function processData(blocks, data) {
 
@@ -302,19 +291,19 @@
           }
         }).addTo(map);
 
-        // first set the zoom/center to the dataLayer's extent
-        map.fitBounds(dataLayer.getBounds());
 
-        // then back the zoom level off a bit (since we're viewing the map full screen)
-        map.setZoom(map.getZoom() - .2);
 
-        updateMap(dataLayer, colorize, '2010');
-        addUi(dataLayer); // add the UI control
+        updateMap(dataLayer, colorize, currentYear);
         drawLegend(breaks, colorize);
         createSliderUI(dataLayer, colorize);
 
 
+
       }
+
+      // add the UI control
+      // call function globally to prevent looping
+      addUi()
 
       function updateMap(dataLayer, colorize, currentYear) {
 
@@ -327,17 +316,9 @@
             fillColor: colorize(Number(props[currentYear]))
           })
 
-          // const tooltip = `<b>${props['NAME']}</b><br />
-          // ${props[currentYear]} % LABEL HERE`;
-          //
-          // layer.bindTooltip(tooltip, {
-          //   sticky: true
-
-
-
-          // });
-
         });
+
+
 
         retreiveInfo(dataLayer, currentYear);
 
@@ -359,7 +340,7 @@
         legendControl.addTo(map);
 
         // select div and create legend title
-        const legend = $('.legend').html("<h3><span>2010</span>Percent of total population</h3><ul>");
+        const legend = $('.legend').html(`<h3><span>${currentYear}</span>Percent of total population</h3><ul>`);
 
         // loop through the break values
         for (let i = 0; i < breaks.length - 1; i++) {
@@ -381,68 +362,76 @@
       } // end drawLegend()
 
       function createSliderUI(dataLayer, colorize) {
-        // create Leaflet control for the slider
-        const sliderControl = L.control({
+        //create Leaflet control for the slider
+
+         // create Leaflet control for the slider
+         const sliderControl3 = L.control({
           position: 'bottomleft'
         });
 
-        // create Leaflet control for the slider
-        const sliderControl2 = L.control({
-          position: 'bottomleft'
-        });
-
-        // when added to the map
-        sliderControl.onAdd = function(map) {
-
+        sliderControl3.onAdd = function(map) {
 
           // select an existing DOM element with an id of "ui-controls"
-          const slider = L.DomUtil.get("ui-controls");
+          const slider3 = L.DomUtil.get("ui-controls3");
 
           // disable scrolling of map while using controls
-          L.DomEvent.disableScrollPropagation(slider);
+          L.DomEvent.disableScrollPropagation(slider3);
 
           // disable click events while using controls
-          L.DomEvent.disableClickPropagation(slider);
+          L.DomEvent.disableClickPropagation(slider3);
 
           // return the slider from the onAdd method
-          return slider;
-        }
-
-        sliderControl2.onAdd = function(map) {
-
-          // select an existing DOM element with an id of "ui-controls"
-          const slider2 = L.DomUtil.get("ui-controls2");
-
-          // disable scrolling of map while using controls
-          L.DomEvent.disableScrollPropagation(slider2);
-
-          // disable click events while using controls
-          L.DomEvent.disableClickPropagation(slider2);
-
-          // return the slider from the onAdd method
-          return slider2;
-        }
+          return slider3;
+          }
 
         // add the control to the map
-        sliderControl.addTo(map);
-        sliderControl2.addTo(map);
+        sliderControl3.addTo(map);
 
-
-        // select the form element
-        $(".year-slider")
+          // select the form element
+        $(".year-slider3")
           .on("input change", function() { // when user changes
-            const currentYear = this.value; // update the year
-            // console.log(currentYear);
-            $('.legend h3 span').html(currentYear); // update legend with current timestamp
-            updateMap(dataLayer, colorize, currentYear); // update the map
+            const selection = this.value;
+            currentYear = swapYear(selection)
 
-          });
+            function swapYear(selection) {
 
-        // select the form element
-        $(".year-slider2")
-          .on("input change", function() { // when user changes
-            const currentYear = this.value; // update the year
-            // console.log(currentYear);
+                return selection == 1 ? 1990
+                : selection == 2 ? 2000
+                : selection == 3 ? 2010
+                : selection == 4 ? 2013
+                : selection == 5 ? 2014
+                : selection == 6 ? 2015
+                : selection == 7 ? 2016
+                : selection == 8 ? 2017
+                : selection == 9 ? 2018
+                : 2010;
+
+                // ternary operator above is like below
+                // if (selection == 1) {
+                //   return "1990"
+                // } else if (selection == 2) {
+                //   return 2000
+                // } else if (selection == 3) {
+                //   return 2010
+                // } else if (selection == 4) {
+                //   return 2013
+                // } else if (selection == 5) {
+                //   return 2014
+                // } else if (selection == 6) {
+                //   return 2015
+                // } else if (selection == 7) {
+                //   return 2016
+                // } else if (selection == 8) {
+                //   return 2017
+                // } else if (selection == 9) {
+                //   return 2018
+                // } else {
+                //   return 2010
+                // }
+
+
+            }
+            // console.log(currentYear,selection);
             $('.legend h3 span').html(currentYear); // update legend with current timestamp
             updateMap(dataLayer, colorize, currentYear); // update the map
 
@@ -465,15 +454,32 @@
         // add the control to the map
         selectControl.addTo(map);
 
+        let i = 0
+
         $('#dropdown-ui select').change(function() {
           // code executed here when change event occurs
           // console.log(`Something changed at ${Date.now()}`);
           // console.log(this.value);
           attributeValue = this.value;
 
+          i++
+
+          // Hack to remove overlay layers
+          map.eachLayer(function(layer){
+            // console.log(layer)
+            if(!layer._url) {
+              map.removeLayer(layer)
+            }
+          });
+
+          map.eachLayer(function(layer){
+            // console.log(layer)
+          });
+
+
           if (attributeValue === "WHITE") {
 
-            const dataLayer = $.getJSON("data/bg2010.json", function(counties) {
+            const getData = $.getJSON("data/bg2010.json", function(counties) {
 
               Papa.parse('data/white2.csv', {
 
@@ -483,14 +489,14 @@
 
                   processData(counties, data);
 
-
                 }
               });
 
             });
 
           } else if (attributeValue === "BLACK") {
-            const dataLayer = $.getJSON("data/bg2010.json", function(counties) {
+
+            const getData = $.getJSON("data/bg2010.json", function(counties) {
 
               Papa.parse('data/black2.csv', {
 
@@ -507,7 +513,8 @@
             });
 
           } else if (attributeValue === "HISPANIC") {
-            const dataLayer = $.getJSON("data/bg2010.json", function(counties) {
+
+            const getData = $.getJSON("data/bg2010.json", function(counties) {
 
               Papa.parse('data/hispanic2.csv', {
 
@@ -525,7 +532,11 @@
 
 
           };
+
+          // console.log(i)
+
         });
+
       }
 
       function retreiveInfo(dataLayer, currentYear) {
@@ -548,9 +559,7 @@
           $('#info span').html(props.NAME);
           $(".year").html(currentYear);
           $(".population").html(props[currentYear]);
-          // $(".boys span:first-child").html('(grade ' + currentGrade + ')');
-          // $(".girls span:last-child").html(Number(props['G' + currentGrade]).toLocaleString());
-          // $(".boys span:last-child").html(Number(props['B' + currentGrade]).toLocaleString());
+
 
           // raise opacity level as visual affordance
           e.layer.setStyle({
@@ -558,7 +567,7 @@
             weight: 2
           });
 
-          // empty arrays for boys and girls values
+          // empty arrays for data values
           const dataValues = []
 
           dataValues.push(props[1990]);
