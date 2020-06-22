@@ -4,7 +4,7 @@ While the disparate impacts of gentrification are widely documented, understandi
 
 1. Objectives:
     - To map demographic trends in Lexington, KY 1990-2018
-    - To explore the extent to which gentrification is displacing black communities and populations of color
+    - To explore the extent to which gentrification is displacing black communities
     - To complement personal stories and anecdotes (qualitative data) of displacement
     - To facilitate greater access to historic and contemporary census data  
 
@@ -25,3 +25,5 @@ While the disparate impacts of gentrification are widely documented, understandi
     - JS libraries: omnivore, leaflet
     - Web technologies: HTML and CSS code
     - Hosting platform: GitHub pages
+
+5. Link to site: https://eba287.github.io/displacement/
