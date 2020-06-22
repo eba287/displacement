@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin="" />
   <link href="https://api.mapbox.com/mapbox-assembly/v0.24.0/assembly.min.css" rel="stylesheet">
   <link href='https://fonts.googleapis.com/css?family=Work+Sans:400,500,600' rel='stylesheet' type='text/css'>
+  <link href="https://fonts.googleapis.com/css2?family=Quattrocento:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lora&family=Quattrocento:wght@700&display=swap" rel="stylesheet">
 
 </head>
 <style>
@@ -88,6 +90,20 @@
     color: whitesmoke;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
   }
+
+  h1 {
+    font-family: 'Quattrocento', serif;
+  }
+
+  p {
+    font-family: 'Lora', serif;
+    font-size: 1.1em;
+  }
+
+  li{
+    font-family: 'Lora', serif;
+    font-size: 1.1em;
+  }
 </style>
 
 <body>
@@ -97,21 +113,27 @@
     <div class='flex-child w-full w300-ml absolute static-ml left bottom'>
       <div class='flex-parent flex-parent--column viewport-third h-full-ml hmax-full bg-white py18 px12'>
         <div class='flex-child flex-child--grow px12 py12 scroll-auto'>
-          <h1 class='txt-h2 mb6'>Displaced: Exploring the racialized dimensions of gentrification</h1>
+          <h1 class='txt-h2 mb6'>Displaced: Exploring the racialized impacts of gentrification</h1>
           <br>
-          <p> While gentrification is often celebrated as brining needed investment to urban neighborhoods, the resulting redevelopment can also displace long time residents, particularly if they are poor and/or black. Of course, today, some of these disparate impacts of gentrification are widely recognized by urban planners, scholars, and community activists alike.
+          <p> While gentrification is often celebrated as brining needed investment to urban neighborhoods, the resulting redevelopment can also displace long-time residents, particularly if they are poor and/or black. Of course, today, some of these
+            disparate impacts of gentrification are widely recognized by urban planners, scholars, and community activists alike.
           </p>
           <br>
-          <p>However, understanding the extent to which poor communiteis of color are being displaced, and where they are moving to, especially given the constraints of the affordable housing market, remains ambigous. At least, documenting this racialized displacement with census data remains underexamined.
+          <p>However, understanding the extent to which communities of color are being displaced, and where they are moving to, especially given the constraints of the affordable housing market, remains relatively unclear.
           </p>
           <br>
-          To be sure, there are numerous personal and anectdotal stories that speak to the racialized dimensions of displacement. For instnace, one community activist expressed to me that: “People have kind of been comparing it to the great migration... The kind of things that people say, it is like ok they are getting all the black folks up out of here. The black folks are
-          being pushed out to Tates Creek, the Russell Creek and areas where there are already a high concentration of black people. They are being pushed to the margins, out of the downtown areas. Especially, we want this downtown area you guys
-          have to go. We want this now and we have plans for it and you are in the way. When I look out my window, I am not trying to see you guys. It is that kind of feeling that people have. People feel it.”
-        </p>
-        <br>
-        Complementing these powerful narratives, this interactive map explores demographic trends in Lexington, KY between 1990-2018.
-
+          <p>To be sure, there are numerous personal and anectdotal stories that speak to the racialized dimensions of displacement. For instance, one Lexington community activist expressed to me that: “People have kind of been comparing it to the
+            great migration...
+            The kind of things that people say, it is like ok they are getting all the black folks up out of here. The black folks are being pushed out to Tates Creek, the Russell Creek and areas where there are already a high concentration of black
+            people. They are being pushed to the margins, out of the downtown areas."
+          </p>
+          <br>
+          <p>
+            Complementing these powerful narratives, this interactive map allows you to explore demographic trends in Lexington, KY between 1990-2018.
+          </p>
+          <br>
+          <p>
+            As you explore, consider the following quesitons: if 2010 can be considered as the approximate start of gentrification for neighborhoods in Lexington, how are neighborhood demographics changing over time? What do these trends reveal about the disparate and often racialized effects of gentrification?
           </p>
         </div>
         <footer class='px12 py12 bg-gray-faint txt-s'>
@@ -120,7 +142,7 @@
               <a class='link' href='https://eba287.github.io/'>Emily Barrett</a>
             </li>
             <li>Data soures &
-              <a class='link' href='https://github.com/eba287/displacement'>  metadata </a>
+              <a class='link' href='https://github.com/eba287/displacement'> metadata </a>
           </ul>
         </footer>
       </div>
@@ -364,8 +386,8 @@
       function createSliderUI(dataLayer, colorize) {
         //create Leaflet control for the slider
 
-         // create Leaflet control for the slider
-         const sliderControl3 = L.control({
+        // create Leaflet control for the slider
+        const sliderControl3 = L.control({
           position: 'bottomleft'
         });
 
@@ -382,12 +404,12 @@
 
           // return the slider from the onAdd method
           return slider3;
-          }
+        }
 
         // add the control to the map
         sliderControl3.addTo(map);
 
-          // select the form element
+        // select the form element
         $(".year-slider3")
           .on("input change", function() { // when user changes
             const selection = this.value;
@@ -395,39 +417,39 @@
 
             function swapYear(selection) {
 
-                return selection == 1 ? 1990
-                : selection == 2 ? 2000
-                : selection == 3 ? 2010
-                : selection == 4 ? 2013
-                : selection == 5 ? 2014
-                : selection == 6 ? 2015
-                : selection == 7 ? 2016
-                : selection == 8 ? 2017
-                : selection == 9 ? 2018
-                : 2010;
+              return selection == 1 ? 1990 :
+                selection == 2 ? 2000 :
+                selection == 3 ? 2010 :
+                selection == 4 ? 2013 :
+                selection == 5 ? 2014 :
+                selection == 6 ? 2015 :
+                selection == 7 ? 2016 :
+                selection == 8 ? 2017 :
+                selection == 9 ? 2018 :
+                2010;
 
-                // ternary operator above is like below
-                // if (selection == 1) {
-                //   return "1990"
-                // } else if (selection == 2) {
-                //   return 2000
-                // } else if (selection == 3) {
-                //   return 2010
-                // } else if (selection == 4) {
-                //   return 2013
-                // } else if (selection == 5) {
-                //   return 2014
-                // } else if (selection == 6) {
-                //   return 2015
-                // } else if (selection == 7) {
-                //   return 2016
-                // } else if (selection == 8) {
-                //   return 2017
-                // } else if (selection == 9) {
-                //   return 2018
-                // } else {
-                //   return 2010
-                // }
+              // ternary operator above is like below
+              // if (selection == 1) {
+              //   return "1990"
+              // } else if (selection == 2) {
+              //   return 2000
+              // } else if (selection == 3) {
+              //   return 2010
+              // } else if (selection == 4) {
+              //   return 2013
+              // } else if (selection == 5) {
+              //   return 2014
+              // } else if (selection == 6) {
+              //   return 2015
+              // } else if (selection == 7) {
+              //   return 2016
+              // } else if (selection == 8) {
+              //   return 2017
+              // } else if (selection == 9) {
+              //   return 2018
+              // } else {
+              //   return 2010
+              // }
 
 
             }
@@ -465,14 +487,14 @@
           i++
 
           // Hack to remove overlay layers
-          map.eachLayer(function(layer){
+          map.eachLayer(function(layer) {
             // console.log(layer)
-            if(!layer._url) {
+            if (!layer._url) {
               map.removeLayer(layer)
             }
           });
 
-          map.eachLayer(function(layer){
+          map.eachLayer(function(layer) {
             // console.log(layer)
           });
 
